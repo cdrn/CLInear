@@ -23,19 +23,25 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.openBrowserLink = void 0;
-const child_process_1 = require("child_process");
+const fs = __importStar(require("fs"));
 const os = __importStar(require("os"));
-function openBrowserLink(url) {
-    if (os.platform() === "linux") {
-        (0, child_process_1.exec)(`xdg-open '${url}'`);
+const path = __importStar(require("path"));
+// File name for config
+const CONFIG_FILE = ".yourtoolconfig";
+// Retrieve Linear client ID from the configuration file
+function getLinearClientID() {
+    const configPath = path.join(os.homedir(), CONFIG_FILE);
+    if (fs.existsSync(configPath)) {
+        const configData = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+        return configData.linearClientId;
     }
-    else if (os.platform() === "darwin") {
-        (0, child_process_1.exec)(`open '${url}'`);
-    }
-    else {
-        console.log("Unsupported operating system.");
-    }
+    return null;
 }
-exports.openBrowserLink = openBrowserLink;
-//# sourceMappingURL=utils.js.map
+// Save Linear client ID to the configuration file
+function saveLinearClientID(clientId) {
+    const configPath = path.join(os.homedir(), CONFIG_FILE);
+    const configData = { linearClientId: clientId };
+    fs.writeFileSync(configPath, JSON.stringify(configData), "utf-8");
+    console.log("Linear client ID saved.");
+}
+//# sourceMappingURL=config.js.map
